@@ -38,6 +38,16 @@ With values supplied dynamically at runtime from stdin
 echo "values: replicas: 4" | timoni build --namespace services example-service . --values values.cue --values values-override.cue --values -
 ```
 
+## Publish
+
+To publish module version to OCI registry:
+
+```
+timoni mod push . oci://docker.io/lumaks/cue-service -v 0.1.0
+```
+
+More exmaples [here](https://timoni.sh/cmd/timoni_mod_push/)
+
 
 ## Install
 
