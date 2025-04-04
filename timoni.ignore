@@ -12,3 +12,7 @@ go.sum
 # CUE
 *_tool.cue
 debug_values.cue
+
+# local dev 
+values/
+values.yaml
