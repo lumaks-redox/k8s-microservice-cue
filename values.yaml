@@ -1,0 +1,49 @@
+# YAML representation of values.cue
+# Generated on March 31, 2025
+
+values:
+  cloudProvider: aws
+
+  envGroups:
+    constants:
+      vars:
+        ENV_CACHE_POLL_SECONDS: "5"
+        REQUEST_TIMEOUT: "30000"
+        SERVICE: "dummy-service"
+    cardinal:
+      vars:
+        DATABASE_HOST: "test.us-east-1.rds.amazonaws.com"
+        DATABASE_NAME: "db"
+        DATABASE_PORT: "5432"
+        DATABASE_ROOT_CERT_FILE: "rds-combined-ca-bundle.pem"
+        DC_COLOR: "green"
+      optional: true
+
+  deployments:
+
+    canary:
+      envGroups:
+      - constants
+      resources:
+        requests:
+          cpu: "500m"
+      image:
+        tag: "1-alpine"
+      secrets:
+        test-default:
+          cloudRef: "service/test-green"
+          mountPath: "/mnt/secrets/service-secrets"
+
+    cardinal:
+      envGroups:
+      - constants
+      - cardinal
+      secrets:
+        test-secrets: 
+          cloudRef: "service/shared-secrets"
+          mountPath: "/mnt/service-metadata/test"
+      image:
+        tag: "2-alpine"
+      replicas: 4
+  monitoring:
+    enabled: true
