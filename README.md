@@ -46,6 +46,12 @@ To publish module version to OCI registry:
 timoni mod push . oci://docker.io/lumaks/cue-service -v 0.1.0
 ```
 
+If you need to check with version have been published, run:
+
+```
+timoni mod list oci://docker.io/lumaks/cue-service
+```
+
 More exmaples [here](https://timoni.sh/cmd/timoni_mod_push/)
 
 
