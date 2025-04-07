@@ -38,12 +38,7 @@ import (
 	// Engineers can override these values in their deployments
 	deploymentDefaults: #DeploymentConfig & {
 		// Default image settings
-		image: timoniv1.#Image & {
-			repository: *"docker.io/nginx" | string
-			tag:        *"1-alpine" | string
-			digest:     *"" | string
-			pullPolicy: *"IfNotPresent" | string
-		}
+		image: #ImageSchema
 
 		// Default pod settings
 		pod: {
@@ -155,6 +150,31 @@ import (
 	}
 }
 
+// Define a reusable schema for the image configuration
+#ImageSchema: {
+	repository: *"docker.io/nginx" | string
+	tag:        *"1-alpine" | string
+	digest:     *"" | string
+	pullPolicy: *"IfNotPresent" | "Always" | "Never"
+	reference: string
+
+	if digest != "" && tag != "" {
+		reference: "\(repository):\(tag)@\(digest)"
+	}
+
+	if digest != "" && tag == "" {
+		reference: "\(repository)@\(digest)"
+	}
+
+	if digest == "" && tag != "" {
+		reference: "\(repository):\(tag)"
+	}
+
+	if digest == "" && tag == "" {
+		reference: "\(repository):latest"
+	}
+}
+
 // SecretProviderClass configuration schema
 #SecretProviderConfig: {
 	// Optional name override, defaults to "<metadata.name>-spc"
@@ -184,7 +204,7 @@ import (
 #DeploymentConfig: {
 	// The image allows setting the container image repository,
 	// tag, digest and pull policy.
-	image?: timoniv1.#Image
+	image?: #ImageSchema
 
 	// The pod allows setting the Kubernetes Pod annotations, image pull secrets,
 	// affinity and anti-affinity rules.
