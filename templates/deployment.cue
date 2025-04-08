@@ -49,13 +49,7 @@ import (
 						name:            #deploymentName
 						image:           #deploymentConfig.image.reference
 						imagePullPolicy: #deploymentConfig.image.pullPolicy
-						ports: [
-							{
-								name:          "http"
-								containerPort: 80
-								protocol:      "TCP"
-							},
-						]
+						ports: #deploymentConfig.ports
 						readinessProbe: {
 							httpGet: {
 								path: "/"
