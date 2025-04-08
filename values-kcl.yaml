@@ -1,0 +1,47 @@
+# YAML representation of values.cue
+# Generated on March 31, 2025
+
+values:
+  cloudProvider: aws
+
+  envGroups:
+    global-env:
+      vars:
+        MY_GLOBAL_ENV: sector-env
+    bar-env:
+      vars:
+        MY_DEPLOY_ENV: bar-env
+    foo-env:
+      vars:
+        MY_DEPLOY_ENV: foo-env
+      optional: true
+
+  deployments:
+
+    foo:
+      envGroups:
+      - global-env
+      - foo-env
+      resources:
+        requests:
+          cpu: "500m"
+      image:
+        tag: "1-alpine"
+      secrets:
+        dc-writer-fhir-green-default:
+          cloudRef: "service/dc-writer-fhir-green"
+          mountPath: "/mnt/secrets/service-secrets"
+
+    bar:
+      envGroups:
+      - global-env
+      - bar-env
+      secrets:
+        dc-writer-fhir-green-shared-secrets: 
+          cloudRef: "service/shared-secrets"
+          mountPath: "/mnt/service-metadata/test"
+      image:
+        tag: "2-alpine"
+      replicas: 4
+  monitoring:
+    enabled: true

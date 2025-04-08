@@ -75,6 +75,20 @@ import (
                 mountPath: "/mnt/service-metadata"
             }
         }
+
+		// Default container ports
+		ports: [...corev1.#ContainerPort] & [
+			{
+				name: "healthcheck"
+				containerPort: 3001
+				protocol: "TCP"
+			},
+			{
+				name: "https"
+				containerPort: 3443
+				protocol: "TCP"
+			}
+		]
 	}
 
 	// Deployments configuration
@@ -213,6 +227,9 @@ import (
 		affinity?: corev1.#Affinity
 		imagePullSecrets?: [...timoniv1.#ObjectReference]
 	}
+
+	// The ports allows setting the container ports.
+	ports?: [...corev1.#ContainerPort]
 
 	// The resources allows setting the container resource requirements.
 	resources?: timoniv1.#ResourceRequirements
