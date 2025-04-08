@@ -130,7 +130,7 @@ import (
 									driver: "secrets-store.csi.k8s.io"
 									readOnly: true
 									volumeAttributes: {
-										secretProviderClass: "spc-\(secretName)"
+										secretProviderClass: "\(#config.metadata.name)-\(secretName)"
 									}
 								}
 							}

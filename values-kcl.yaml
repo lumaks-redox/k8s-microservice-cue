@@ -28,8 +28,8 @@ values:
       image:
         tag: "1-alpine"
       secrets:
-        dc-writer-fhir-green-default:
-          cloudRef: "service/dc-writer-fhir-green"
+        foo-secret:
+          cloudRef: "service/foo-secret"
           mountPath: "/mnt/secrets/service-secrets"
 
     bar:
@@ -37,8 +37,8 @@ values:
       - global-env
       - bar-env
       secrets:
-        dc-writer-fhir-green-shared-secrets: 
-          cloudRef: "service/shared-secrets"
+        bar-secret: 
+          cloudRef: "service/bar-secret"
           mountPath: "/mnt/service-metadata/test"
       image:
         tag: "2-alpine"

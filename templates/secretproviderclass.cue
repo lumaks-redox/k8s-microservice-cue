@@ -10,7 +10,7 @@ import (
     #secretValue: string
 
     metadata: {
-        name: "spc-\(#secretName)"
+        name: "\(#config.metadata.name)-\(#secretName)"
         namespace: #config.metadata.namespace
         labels: #config.metadata.labels
     }

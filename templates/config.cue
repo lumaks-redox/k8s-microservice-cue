@@ -50,8 +50,12 @@ import (
 		// Default resource requirements
 		resources: timoniv1.#ResourceRequirements & {
 			requests: {
-				memory: *"200Mi" | string
-				cpu:    *"10m" | string
+				memory: *"512Mi" | string
+				cpu:    *"500m" | string
+			}
+			limits: {
+				memory: *"1Gi" | string
+				cpu:    *"1000m" | string
 			}
 		}
 
