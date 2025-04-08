@@ -90,6 +90,7 @@ import (
 						}
 						if #deploymentConfig.envGroups != _|_ {
 							envFrom: [
+								{configMapRef: {name: "cluster-constants"}},
 								for groupName in #deploymentConfig.envGroups {
 									configMapRef: {
 										name: "\(#config.metadata.name)-\(groupName)"
@@ -100,6 +101,23 @@ import (
 								}
 							]
 						}
+						command: ["bash", "-c", "node .node_modules/.bin/redox-start -- src/index.ts"]
+						env: [
+							{
+								name: "MY_POD_NAME"
+								valueFrom: fieldRef: {
+									apiVersion: "v1"
+									fieldPath: "metadata.name"
+								}
+							},
+							{
+								name: "MY_POD_NAMESPACE"
+								valueFrom: fieldRef: {
+									apiVersion: "v1"
+									fieldPath: "metadata.namespace"
+								}
+							}
+						]
 					},
 				]
 				if #deploymentConfig.pod.affinity != _|_ {
