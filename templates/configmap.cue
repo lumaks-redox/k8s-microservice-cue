@@ -19,6 +19,8 @@ import (
 		if #config.metadata.annotations != _|_ || #configMapData.annotations != _|_ {
 			annotations: (#config.metadata.annotations | {}) & (#configMapData.annotations | {})
 		}
+		// Add namespace from config
+		namespace: #config.metadata.namespace
 	}
 	data: #configMapData.data
 }

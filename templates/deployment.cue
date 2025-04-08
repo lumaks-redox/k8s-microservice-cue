@@ -23,6 +23,9 @@ import (
 		
 		// Set the name explicitly with the deployment suffix
 		name: "\(#config.metadata.name)-\(#deploymentName)"
+		
+		// Add namespace from config
+		namespace: #config.metadata.namespace
 	}
 	spec: appsv1.#DeploymentSpec & {
 		replicas: #deploymentConfig.replicas

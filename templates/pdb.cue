@@ -19,6 +19,8 @@ import (
 		if #config.metadata.annotations != _|_ || #pdbConfig.annotations != _|_ {
 			annotations: (#config.metadata.annotations | {}) & (#pdbConfig.annotations | {})
 		}
+		// Add namespace from config
+		namespace: #config.metadata.namespace
 	}
 	spec: {
 		selector: {

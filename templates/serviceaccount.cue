@@ -17,6 +17,8 @@ import (
 		if #config.metadata.annotations != _|_ || #config.serviceAccount.annotations != _|_ {
 			annotations: (#config.metadata.annotations | {}) & (#config.serviceAccount.annotations | {})
 		}
+		// Add namespace from config
+		namespace: #config.metadata.namespace
 	}
 	automountServiceAccountToken: #config.serviceAccount.automountServiceAccountToken
 }
