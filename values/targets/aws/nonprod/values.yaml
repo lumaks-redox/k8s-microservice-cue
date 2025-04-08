@@ -1,0 +1,8 @@
+# AWS specific values for nonprod envrionment
+values:
+  envGroups:
+    global-env:
+      vars:
+        PROD: "false"
+  service:
+    enabled: "false"

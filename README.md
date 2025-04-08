@@ -1,6 +1,42 @@
 # redox-service
 
-A [timoni.sh](http://timoni.sh) module for deploying redox-service to Kubernetes clusters.
+A [timoni.sh](http://timoni.sh) module for deploying redox-service to Kubernetes clusters. Timoni is a helm equivalent for cuelang. (P.S. doesn't support rollback command yet)
+
+In our case, we can just use it to render Kubernetes manifests and for packaging and distribution of our code. 
+
+
+## Install
+
+Get timoni:
+
+```
+brew install stefanprodan/tap/timoni
+```
+
+## Run
+
+This code was packaged and published as a demo OCI image to dockerhub at `oci://docker.io/lumaks/cue-service`.
+
+You only need to define configuration values in yaml format and run the latest version. Most basic example:
+
+```
+timoni build --namespace services my-app oci://docker.io/lumaks/cue-service -f values/values.yaml
+```
+
+You can always define all values in a single file, but the next few examples will show how to combine several files for better organisation and to keep your values DRY. Let's template code for GCP:
+
+```
+timoni build --namespace services my-app oci://docker.io/lumaks/cue-service -f values/values.yaml -f values/targets/gcp/values.yaml
+```
+
+Now, let's template code for AWS and for `prod` environment:
+
+```
+timoni build --namespace services my-app oci://docker.io/lumaks/cue-service -f values/values.yaml -f values/targets/aws/values.yaml -f values/targets/aws/prod/values.yaml
+```
+
+# Development
+
 
 ## Import
 
@@ -23,19 +59,19 @@ To check templates with default values, run (`nginx` is example name and `test` 
 P.S. this comand will error out if there are values overrides in multiple files and you don't specify values file.
 
 ```
-timoni build --namespace services example-service .
+timoni build --namespace services my-app .
 ```
 
 With values and overrides:
 
 ```
-timoni build --namespace services example-service . --values values.cue --values values-override.cue
+timoni build --namespace services my-app . --values values.cue --values values-override.cue
 ```
 
 With values supplied dynamically at runtime from stdin
 
 ```
-echo "values: replicas: 4" | timoni build --namespace services example-service . --values values.cue --values values-override.cue --values -
+echo "values: replicas: 4" | timoni build --namespace services my-app . --values values.cue --values values-override.cue --values -
 ```
 
 ## Publish

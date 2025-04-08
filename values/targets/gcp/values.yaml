@@ -1,0 +1,3 @@
+# GCP specific values shared between nonprod and prod
+values:
+  cloudProvider: gcp

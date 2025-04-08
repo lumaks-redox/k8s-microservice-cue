@@ -2,7 +2,6 @@
 # Generated on March 31, 2025
 
 values:
-  cloudProvider: aws
 
   envGroups:
     global-env:

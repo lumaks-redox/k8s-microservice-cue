@@ -98,7 +98,7 @@ import (
 	// Deployments configuration
 	// Maps a deployment name to its configuration
 	// Engineers only need to specify values they want to override
-	deployments!: [string]: #DeploymentConfig
+	deployments: [string]: #DeploymentConfig
 
 	// The service allows setting the Kubernetes Service annotations and port.
 	// By default, the HTTP port is 80.

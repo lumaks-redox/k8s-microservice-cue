@@ -1,0 +1,31 @@
+# AWS specific values for prod envrionment
+values:
+  envGroups:
+    # merge additonal env values for prod
+    global-env:
+      vars:
+        PROD: "true"
+    # add additional env group for baz deployment
+    baz-env:
+      vars:
+        MY_DEPLOY_ENV: baz-env
+
+  deployments:
+    # overwrite foo replicas for prod
+    foo:
+      replicas: 10
+    
+    # extra baz deployment only for prod
+    baz:
+      envGroups:
+      - global-env
+      - baz-env
+      image:
+        tag: "2-alpine" 
+        repository: "docker.io/nginx"
+        digest:     ""
+      replicas: 4
+
+  # enable monitoring for prod
+  monitoring:
+    enabled: true

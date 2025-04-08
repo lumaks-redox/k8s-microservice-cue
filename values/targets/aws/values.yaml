@@ -1,0 +1,6 @@
+# Placeholder for AWS specific values shared between nonprod and prod
+# AWS is selected as a default cloud provider in config.cue
+values:
+  monitoring:
+    enabled: false
+        
