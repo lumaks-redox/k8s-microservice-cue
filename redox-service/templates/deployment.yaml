@@ -1,0 +1,106 @@
+{{- range $name, $deployConfig := .Values.deployments }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "redox-service.fullname" $ }}-{{ $name }}
+  labels:
+    {{- include "redox-service.labels" $ | nindent 4 }}
+    deployment: {{ $name }}
+  {{- with default $.Values.deploymentDefaults.annotations $deployConfig.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ $deployConfig.replicas | default $.Values.deploymentDefaults.replicas }}
+  selector:
+    matchLabels:
+      {{- include "redox-service.selectorLabels" $ | nindent 6 }}
+      deployment: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "redox-service.selectorLabels" $ | nindent 8 }}
+        deployment: {{ $name }}
+      {{- if or (and $deployConfig.pod $deployConfig.pod.annotations) (and $.Values.deploymentDefaults.pod $.Values.deploymentDefaults.pod.annotations) }}
+      annotations:
+        {{- if and $deployConfig.pod $deployConfig.pod.annotations }}
+        {{- toYaml $deployConfig.pod.annotations | nindent 8 }}
+        {{- else if and $.Values.deploymentDefaults.pod $.Values.deploymentDefaults.pod.annotations }}
+        {{- toYaml $.Values.deploymentDefaults.pod.annotations | nindent 8 }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- with default $.Values.deploymentDefaults.imagePullSecrets $deployConfig.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "redox-service.serviceAccountName" $ }}
+      containers:
+        - name: {{ $name }}
+          image: {{ $deployConfig.image.repository | default $.Values.deploymentDefaults.image.repository }}:{{ $deployConfig.image.tag | default $.Values.deploymentDefaults.image.tag }}
+          imagePullPolicy: {{ $deployConfig.image.pullPolicy | default $.Values.deploymentDefaults.image.pullPolicy }}
+          ports:
+            {{- range $deployConfig.ports | default $.Values.deploymentDefaults.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+              protocol: {{ .protocol }}
+            {{- end }}
+          {{- if or $deployConfig.readinessProbe $.Values.deploymentDefaults.readinessProbe }}
+          readinessProbe:
+            {{- $readinessProbe := $deployConfig.readinessProbe | default $.Values.deploymentDefaults.readinessProbe }}
+            {{- toYaml $readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if or $deployConfig.livenessProbe $.Values.deploymentDefaults.livenessProbe }}
+          livenessProbe:
+            {{- $livenessProbe := $deployConfig.livenessProbe | default $.Values.deploymentDefaults.livenessProbe }}
+            {{- toYaml $livenessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- $resources := $deployConfig.resources | default $.Values.deploymentDefaults.resources }}
+            {{- toYaml $resources | nindent 12 }}
+          securityContext:
+            {{- $securityContext := $deployConfig.securityContext | default $.Values.deploymentDefaults.securityContext }}
+            {{- toYaml $securityContext | nindent 12 }}
+          {{- if $deployConfig.envGroups }}
+          envFrom:
+            {{- range $groupName := $deployConfig.envGroups }}
+            - configMapRef:
+                name: {{ include "redox-service.fullname" $ }}-{{ $groupName }}
+                {{- if and $.Values.envGroups }}
+                {{- if and $.Values.envGroups $groupName $.Values.envGroups[$groupName].optional }}
+                optional: {{ $.Values.envGroups[$groupName].optional }}
+                {{- end }}
+                {{- end }}
+            {{- end }}
+          {{- end }}
+          command: {{ $deployConfig.command | default $.Values.deploymentDefaults.command | default (list "bash" "-c" "node .node_modules/.bin/redox-start -- src/index.ts") }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      {{- if or ($deployConfig.secrets) ($.Values.deploymentDefaults.secrets) }}
+      volumes:
+        {{- range $secretName, $secretConfig := $deployConfig.secrets | default dict }}
+        - name: {{ $secretName }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "redox-service.fullname" $ }}-{{ $secretName }}
+        {{- end }}
+        {{- range $secretName, $secretConfig := $.Values.deploymentDefaults.secrets | default dict }}
+        - name: {{ $secretName }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "redox-service.fullname" $ }}-{{ $secretName }}
+        {{- end }}
+      {{- end }}
+{{- end }}

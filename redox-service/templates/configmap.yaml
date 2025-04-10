@@ -1,0 +1,13 @@
+{{- range $name, $group := .Values.envGroups }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "redox-service.fullname" $ }}-{{ $name }}
+  labels:
+    {{- include "redox-service.labels" $ | nindent 4 }}
+data:
+  {{- range $key, $value := $group.vars }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+---
+{{- end }}
